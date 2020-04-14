@@ -137,6 +137,88 @@ Hiện nay, lập trình đồng thời là vô cùng quan trọng và cần thi
 
 # Goroutines
 
-Như phân tích ở trên, thì Goroutines không phải là một thread. Mỗi hoạt động đồng thời được gọi là Goroutine. Một ví dụ cụ thể như sau, trong đó chúng ta đang xử lý nhiều loại dữ liệu và ghi vào nhiều tệp. Th
+Như phân tích ở trên, thì Goroutines không phải là một thread. Mỗi hoạt động đồng thời được gọi là Goroutine. Một ví dụ cụ thể như sau, trong đó chúng ta đang xử lý nhiều loại dữ liệu và ghi vào nhiều tệp. Thông thường có 2 cách để làm điều này
 
+- Lập trình tuần tự
+
+- Lập trình đồng thời
+
+Ví dụ dưới đây sẽ chỉ cho bạn thấy, để chuyển từ chương trình tuần tự sang đồng thời sẽ vô cùng đơn giản, nó không hề khó như bạn nghĩ. 
+
+** Chương trình t:**
+
+```
+package main
+
+import (
+       "os"
+       "fmt"
+)
+
+var filenamearray []string
+
+func processData(index int) {
+       f, _ := os.OpenFile(filenamearray[index],os.O_RDWR | os.O_CREATE,0777) // skipping error
+       defer f.Close()
+       for i := 0;i<10000000;i++ {
+              a := i + index
+              fmt.Fprintln(f,a)
+       }
+}
+
+func main() {
+
+       filenamearray = []string{"a1", "a2", "a3","a4"}
+
+       for i:=0;i<len(filenamearray) ;i++ {
+              processData(i)
+       }
+
+
+}
+```
+
+** Chương trình song song: **
+
+```
+import (
+       "os"
+       "fmt"
+       "sync"
+)
+
+var filenamearray []string
+
+var wg sync.WaitGroup
+
+func processData(index int) {
+       f, _ := os.OpenFile(filenamearray[index],os.O_RDWR | os.O_CREATE,0777) // skipping error
+       defer wg.Done()
+       defer f.Close()
+
+       for i := 0;i<10000000;i++ {
+              a := i + index
+              fmt.Fprintln(f,a)
+       }
+}
+
+func main() {
+
+       filenamearray = []string{"a1", "a2", "a3","a4"}
+
+       for i:=0;i<len(filenamearray) ;i++ {
+              wg.Add(1)
+              go processData(i)
+       }
+
+       wg.Wait()
+
+}
+
+```
+
+ KHi chạy hai chương trình, nó có sự khác biệt lớn về mặt performance: 
+ 
+ - Chạy tuần tự: 1 Minute and 21 seconds 
+ - Chạy song song : 28 seconds. 
 
