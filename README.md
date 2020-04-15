@@ -222,3 +222,74 @@ func main() {
  - Chạy tuần tự: 1 Minute and 21 seconds 
  - Chạy song song : 28 seconds. 
 
+# Coins Change
+
+Hãy thử xét bài toán coins change sau: Bạn có một số dolla nhất định, và một danh sách các đồng tiền, trên mỗi đồng tiền là một mệnh giá khác nhau, tìm và in ra tất các các cách khác nhau mà bạn có thể chia số dollar ban đầu, với những đồng tiền bạn có, điều kiện là số đồng tiền là vô hạn. 
+
+Solution: 
+
+Trước khi code, chúng ta thử phân tích yêu cầu bài toán và đưa ra giải thuật xem sao. Nếu bạn có các đồng tiền mệnh giá {2, 3, 5, 6} thì có bao nhiêu cách để bạn có thể chia được 10$. Cách đơn giản nhất mà bạn có thể nghĩ để thực hiện công việc trên là gì? Nếu là tôi thì tôi sẽ nghĩ đến đệ quy đầu tiên, cứ thử tất cả trường hợp, thỏa mãn điều kiện thì in ra và tăng số ượng. Nhưng thuật toán đệ quy thì bạn biết rồi đó, độ phức tạp của nó là vô cùng lớn, mã code dùng đệ quy như sau:
+
+```
+package main
+
+import (
+       "fmt"
+       "sort"
+)
+
+var ways int
+
+func coinchange(startIndex int, totalMoney int , coins []int) {
+       if startIndex < 0 {
+              return
+       }
+       if totalMoney < 0 {               return        }        if totalMoney == 0 {               ways++               return        }        for i := startIndex;i>=0;i-- {
+              coinchange(i,totalMoney-coins[i],coins)
+       }
+
+}
+
+func main() {
+       var money, numCoins int
+       fmt.Scanf("%d%d",&moneys )
+       k := make([]int,numCoins)
+       for i:=0;i<numCoins;i++ {
+              fmt.Scanf("%d",&k   }
+
+       // sort to optimize the calulation
+       sort.Ints(k)
+
+       coinchange(numCoins-1,money,k)
+
+       fmt.Println(ways)
+
+}
+```
+
+Cách này cũng không đến nỗi, nếu bộ dữ liệu của bạn là dữ liệu nhỏ, Nhưng với dữ liệu lớn thì thật sự là vấn đề, chắc chắn nó sẽ bị timeout khi chạy. Chúng ta duyệt qua dữ liệu hết lần này tới lần khác. Ví dụ {6, 4} = 10, {6, 2, 2} = 10. Để giải quyết vấn đề này, hãy thử xem chương trình sau đây:
+
+```
+package main
+import "fmt"
+
+func main() {
+       var money, numCoins int
+       fmt.Scanf("%d%d",&moneys )
+       k := make([]int,numCoins)
+       for i:=0;i<numCoins;i++ {
+              fmt.Scanf("%d",&k   }
+       // make a DP array
+       dp := make([]int,money+1)
+       dp[0] = 1
+       for i:=0;i<numCoins;i++ {
+              start := k[i]
+              for j:=start;j<=money;j++ {
+                     // use the saved solution
+                     dp[j] += dp[j-start]
+              }
+       }
+       fmt.Println(dp[money])
+}
+```
+Với việc sử dụng chanel vào bài toán, chúng ta không s
