@@ -292,4 +292,4 @@ func main() {
        fmt.Println(dp[money])
 }
 ```
-Với việc sử dụng chanel vào bài toán, chúng ta không s
+Với việc sử dụng chanel vào bài toán, chúng ta sẽ k sợ bị timeout khi chạy viows dữ liệu lớn. 
